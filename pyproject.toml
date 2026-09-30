@@ -1,0 +1,65 @@
+[project]
+name = "monitor-shift"
+version = "0.1.0.dev0"
+description = "Measure how synthetic-calibrated agent monitor thresholds behave on real agent logs."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+authors = [{ name = "Shagun" }]
+dependencies = [
+    "control-arena==19.0.0",
+    "inspect-ai>=0.3.250",
+    "huggingface-hub>=0.33",
+    "numpy>=1.26",
+    "platformdirs>=4",
+    "rich>=13.7",
+    "scipy>=1.11",
+    "statsmodels>=0.14",
+    "typer>=0.12",
+]
+
+[project.scripts]
+mshift = "monitor_shift.cli.main:app"
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.100",
+    "pyright>=1.1.400",
+    "pytest>=8",
+    "pytest-cov>=5",
+    "pytest-socket>=0.7",
+    "ruff>=0.6",
+    "syrupy>=4.6",
+]
+
+[build-system]
+requires = ["uv_build>=0.11,<0.12"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--disable-socket", "-m", "not live", "--strict-markers"]
+markers = ["live: calls real model APIs or datasets; costs money; run with -m live"]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["monitor_shift"]
+branch = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# Docs (SPEC.md above all) keep their hand-aligned code blocks.
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PT", "N", "C4", "PTH"]
+
+[tool.pyright]
+include = ["src", "tests"]
+typeCheckingMode = "strict"
+pythonVersion = "3.11"
+venvPath = "."
+venv = ".venv"
+# statsmodels ships no stubs; we type its outputs at the call site instead.
+reportMissingTypeStubs = false

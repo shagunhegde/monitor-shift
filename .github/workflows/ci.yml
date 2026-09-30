@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: uv sync --all-extras --locked
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Type-check
+        run: uv run pyright
+      - name: Test (offline; sockets blocked)
+        env:
+          HYPOTHESIS_PROFILE: ci
+        run: uv run pytest -q --cov --cov-report=term
+      - name: Coverage gate (stats, calibrate, runner >= 90%)
+        run: >
+          uv run coverage report --fail-under=90
+          --include='src/monitor_shift/stats/*,src/monitor_shift/calibrate/*,src/monitor_shift/runner/*'
+      - name: Demo (no keys, no network)
+        run: uv run mshift demo --fake
