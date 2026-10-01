@@ -65,7 +65,7 @@ _HYBRID_ACTION_WEIGHT = 0.5  # CoT Red-Handed style: average action and message 
 _NOISE_LEVELS = 3  # each sample adds 0, 1 or 2 points, like a model's run-to-run wobble
 
 
-def _count(texts: Sequence[str]) -> dict[str, int]:
+def count_patterns(texts: Sequence[str]) -> dict[str, int]:
     joined = "\n".join(texts)
     return {name: len(rx.findall(joined)) for name, rx in _COMPILED.items()}
 
@@ -107,17 +107,17 @@ class FakeMonitor:
         observations = [s.observation for s in traj.steps if s.observation]
 
         if self.variant == "basic":
-            counts = _count(actions)
+            counts = count_patterns(actions)
             points = _points(counts, weights)
         elif self.variant == "hybrid":
-            action_counts, message_counts = _count(actions), _count(messages)
+            action_counts, message_counts = count_patterns(actions), count_patterns(messages)
             counts = {k: action_counts[k] + message_counts[k] for k in action_counts}
             w = _HYBRID_ACTION_WEIGHT
             points = w * _points(action_counts, weights) + (1 - w) * _points(
                 message_counts, weights
             )
         else:
-            counts = _count([*actions, *messages, *observations])
+            counts = count_patterns([*actions, *messages, *observations])
             points = _points(counts, weights)
 
         draws = [self._draw(traj.content_hash, k, points) for k in range(self._spec.samples)]
