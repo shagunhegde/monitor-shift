@@ -1,0 +1,25 @@
+# Python and tooling
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+coverage.xml
+htmlcov/
+.DS_Store
+
+# Data never lives in the repo: the store is under $MSHIFT_CACHE_DIR.
+# These patterns are a backstop so AI Village text can't be committed by accident.
+data/
+cache/
+logs/
+*.eval
+*.parquet
+
+# Personal Claude Code settings
+.claude/settings.local.json
