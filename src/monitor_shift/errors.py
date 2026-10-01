@@ -23,3 +23,7 @@ class SchemaError(MonitorShiftError):
 
 class ConfigError(MonitorShiftError):
     """A command or config asks for something monitor-shift can't do."""
+
+
+class BudgetExceededError(MonitorShiftError):
+    """The next model call could push spend past --max-usd, so the run stopped first."""

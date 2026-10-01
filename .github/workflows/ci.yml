@@ -33,6 +33,8 @@ jobs:
         env:
           HYPOTHESIS_PROFILE: ci
         run: uv run pytest -q --cov --cov-report=term
+      - name: Slow offline tests (real AgentDojo on the mock model)
+        run: uv run pytest -q -m slow
       - name: Coverage gate (stats, calibrate, runner >= 90%)
         run: >
           uv run coverage report --fail-under=90

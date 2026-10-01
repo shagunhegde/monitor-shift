@@ -3,6 +3,7 @@
 ## Commands
 - uv sync --all-extras
 - uv run pytest -q                          # offline, seconds
+- uv run pytest -q -m slow                  # real AgentDojo on the mock model
 - uv run ruff check . && uv run pyright
 - uv run ruff format .                      # CI runs `ruff format --check .`
 - uv run mshift doctor                      # keys, dataset access, cache

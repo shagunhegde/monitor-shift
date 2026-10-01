@@ -15,7 +15,10 @@ settings.load_profile(os.environ.get("HYPOTHESIS_PROFILE", "default"))
 
 @pytest.fixture(autouse=True)
 def _isolated_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Point the cache at a temp dir and make Hugging Face refuse to download."""
+    """Point every cache at a temp dir and make Hugging Face refuse to download."""
     monkeypatch.setenv("MSHIFT_CACHE_DIR", str(tmp_path / "cache"))
     monkeypatch.setenv("HF_HUB_OFFLINE", "1")
     monkeypatch.setenv("HF_DATASETS_OFFLINE", "1")
+    monkeypatch.setenv("INSPECT_CACHE_DIR", str(tmp_path / "inspect-cache"))
+    monkeypatch.setenv("MSHIFT_NO_DOTENV", "1")  # never load real keys from .env in tests
+    monkeypatch.delenv("MSHIFT_MODEL", raising=False)

@@ -16,10 +16,15 @@ dependencies = [
     "scipy>=1.11",
     "statsmodels>=0.14",
     "typer>=0.12",
+    "scikit-learn>=1.5",
+    "python-dotenv>=1.0",
 ]
 
 [project.scripts]
 mshift = "monitor_shift.cli.main:app"
+
+[project.entry-points.inspect_ai]
+monitor_shift = "monitor_shift._registry"
 
 [dependency-groups]
 dev = [
@@ -38,8 +43,11 @@ build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = ["--disable-socket", "-m", "not live", "--strict-markers"]
-markers = ["live: calls real model APIs or datasets; costs money; run with -m live"]
+addopts = ["--disable-socket", "--allow-unix-socket", "-m", "not live and not slow", "--strict-markers"]
+markers = [
+    "live: calls real model APIs or datasets; costs money; run with -m live",
+    "slow: offline but over ten seconds; run with -m slow (CI runs them)",
+]
 filterwarnings = ["error"]
 
 [tool.coverage.run]
